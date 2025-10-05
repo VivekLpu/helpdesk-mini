@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HelpDesk Mini - Auth Tester</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        h1 {
+            color: #333;
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 10px;
+        }
+        h2 {
+            color: #555;
+            margin-top: 30px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #555;
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-right: 10px;
+            margin-top: 10px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        button.secondary {
+            background-color: #6c757d;
+        }
+        button.secondary:hover {
+            background-color: #545b62;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 4px;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        .success {
+            background-color: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+        .error {
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+        .info {
+            background-color: #d1ecf1;
+            border: 1px solid #bee5eb;
+            color: #0c5460;
+        }
+        .status {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        .status.online {
+            background-color: #28a745;
+            color: white;
+        }
+        .status.offline {
+            background-color: #dc3545;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔐 HelpDesk Mini - Authentication Tester</h1>
+        <p>This tool helps you test the login and signup functionality directly.</p>
+        
+        <div id="status-check">
+            <h2>Server Status</h2>
+            <p>Backend: <span id="backend-status" class="status">Checking...</span></p>
+            <p>Frontend: <span id="frontend-status" class="status">Checking...</span></p>
+            <button onclick="checkServers()">Refresh Status</button>
+        </div>
+    </div>
+
+    <div class="container">
+        <h2>🔑 Test Login</h2>
+        <div class="form-group">
+            <label>Email:</label>
+            <input type="email" id="login-email" value="admin@example.com" placeholder="Enter email">
+        </div>
+        <div class="form-group">
+            <label>Password:</label>
+            <input type="password" id="login-password" value="admin123" placeholder="Enter password">
+        </div>
+        <button onclick="testLogin()">Test Login</button>
+        <button class="secondary" onclick="clearLoginForm()">Clear</button>
+        <div id="login-result"></div>
+    </div>
+
+    <div class="container">
+        <h2>📝 Test Signup</h2>
+        <div class="form-group">
+            <label>First Name:</label>
+            <input type="text" id="signup-firstname" value="Test" placeholder="Enter first name">
+        </div>
+        <div class="form-group">
+            <label>Last Name:</label>
+            <input type="text" id="signup-lastname" value="User" placeholder="Enter last name">
+        </div>
+        <div class="form-group">
+            <label>Username:</label>
+            <input type="text" id="signup-username" value="testuser" placeholder="Enter username (3-30 chars)">
+        </div>
+        <div class="form-group">
+            <label>Email:</label>
+            <input type="email" id="signup-email" value="test@example.com" placeholder="Enter email">
+        </div>
+        <div class="form-group">
+            <label>Password:</label>
+            <input type="password" id="signup-password" value="test123" placeholder="Enter password (min 6 chars)">
+        </div>
+        <button onclick="testSignup()">Test Signup</button>
+        <button class="secondary" onclick="clearSignupForm()">Clear</button>
+        <div id="signup-result"></div>
+    </div>
+
+    <div class="container">
+        <h2>📋 Test Accounts</h2>
+        <table style="width: 100%; border-collapse: collapse;">
+            <tr style="background-color: #f8f9fa;">
+                <th style="padding: 10px; text-align: left; border: 1px solid #ddd;">Role</th>
+                <th style="padding: 10px; text-align: left; border: 1px solid #ddd;">Email</th>
+                <th style="padding: 10px; text-align: left; border: 1px solid #ddd;">Password</th>
+                <th style="padding: 10px; text-align: left; border: 1px solid #ddd;">Action</th>
+            </tr>
+            <tr>
+                <td style="padding: 10px; border: 1px solid #ddd;">Admin</td>
+                <td style="padding: 10px; border: 1px solid #ddd;">admin@example.com</td>
+                <td style="padding: 10px; border: 1px solid #ddd;">admin123</td>
+                <td style="padding: 10px; border: 1px solid #ddd;">
+                    <button onclick="quickLogin('admin@example.com', 'admin123')">Quick Login</button>
+                </td>
+            </tr>
+            <tr>
+                <td style="padding: 10px; border: 1px solid #ddd;">Agent</td>
+                <td style="padding: 10px; border: 1px solid #ddd;">agent@example.com</td>
+                <td style="padding: 10px; border: 1px solid #ddd;">agent123</td>
+                <td style="padding: 10px; border: 1px solid #ddd;">
+                    <button onclick="quickLogin('agent@example.com', 'agent123')">Quick Login</button>
+                </td>
+            </tr>
+            <tr>
+                <td style="padding: 10px; border: 1px solid #ddd;">User</td>
+                <td style="padding: 10px; border: 1px solid #ddd;">user@example.com</td>
+                <td style="padding: 10px; border: 1px solid #ddd;">user123</td>
+                <td style="padding: 10px; border: 1px solid #ddd;">
+                    <button onclick="quickLogin('user@example.com', 'user123')">Quick Login</button>
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:5000';
+        const FRONTEND_URL = 'http://localhost:3000';
+
+        // Check server status
+        async function checkServers() {
+            // Check backend
+            try {
+                const response = await fetch(`${API_URL}/api/health`);
+                if (response.ok) {
+                    document.getElementById('backend-status').textContent = 'Online';
+                    document.getElementById('backend-status').className = 'status online';
+                } else {
+                    document.getElementById('backend-status').textContent = 'Error';
+                    document.getElementById('backend-status').className = 'status offline';
+                }
+            } catch (error) {
+                document.getElementById('backend-status').textContent = 'Offline';
+                document.getElementById('backend-status').className = 'status offline';
+            }
+
+            // Check frontend
+            try {
+                const response = await fetch(FRONTEND_URL);
+                if (response.ok) {
+                    document.getElementById('frontend-status').textContent = 'Online';
+                    document.getElementById('frontend-status').className = 'status online';
+                } else {
+                    document.getElementById('frontend-status').textContent = 'Error';
+                    document.getElementById('frontend-status').className = 'status offline';
+                }
+            } catch (error) {
+                document.getElementById('frontend-status').textContent = 'Offline';
+                document.getElementById('frontend-status').className = 'status offline';
+            }
+        }
+
+        // Test login
+        async function testLogin() {
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+            const resultDiv = document.getElementById('login-result');
+
+            resultDiv.innerHTML = '<div class="result info">Testing login...</div>';
+
+            try {
+                const response = await fetch(`${API_URL}/api/auth/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ email, password })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    resultDiv.innerHTML = `
+                        <div class="result success">
+                            <strong>✅ Login Successful!</strong><br><br>
+                            <strong>Token:</strong> ${data.token.substring(0, 50)}...<br>
+                            <strong>User ID:</strong> ${data.user.id}<br>
+                            <strong>Username:</strong> ${data.user.username}<br>
+                            <strong>Email:</strong> ${data.user.email}<br>
+                            <strong>Role:</strong> ${data.user.role}<br>
+                            <strong>Name:</strong> ${data.user.firstName} ${data.user.lastName}<br><br>
+                            <button onclick="window.open('${FRONTEND_URL}', '_blank')">Open Frontend</button>
+                        </div>
+                    `;
+                } else {
+                    resultDiv.innerHTML = `
+                        <div class="result error">
+                            <strong>❌ Login Failed</strong><br><br>
+                            <strong>Status:</strong> ${response.status}<br>
+                            <strong>Error:</strong> ${data.error?.message || 'Unknown error'}<br>
+                            <strong>Code:</strong> ${data.error?.code || 'N/A'}
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `
+                    <div class="result error">
+                        <strong>❌ Network Error</strong><br><br>
+                        ${error.message}<br><br>
+                        <strong>Possible causes:</strong><br>
+                        - Backend server is not running<br>
+                        - CORS is blocking the request<br>
+                        - Network connectivity issues
+                    </div>
+                `;
+            }
+        }
+
+        // Test signup
+        async function testSignup() {
+            const firstName = document.getElementById('signup-firstname').value;
+            const lastName = document.getElementById('signup-lastname').value;
+            const username = document.getElementById('signup-username').value;
+            const email = document.getElementById('signup-email').value;
+            const password = document.getElementById('signup-password').value;
+            const resultDiv = document.getElementById('signup-result');
+
+            resultDiv.innerHTML = '<div class="result info">Testing signup...</div>';
+
+            try {
+                const response = await fetch(`${API_URL}/api/auth/register`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ firstName, lastName, username, email, password })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    resultDiv.innerHTML = `
+                        <div class="result success">
+                            <strong>✅ Signup Successful!</strong><br><br>
+                            <strong>Token:</strong> ${data.token.substring(0, 50)}...<br>
+                            <strong>User ID:</strong> ${data.user.id}<br>
+                            <strong>Username:</strong> ${data.user.username}<br>
+                            <strong>Email:</strong> ${data.user.email}<br>
+                            <strong>Role:</strong> ${data.user.role}<br>
+                            <strong>Name:</strong> ${data.user.firstName} ${data.user.lastName}<br><br>
+                            <button onclick="window.open('${FRONTEND_URL}', '_blank')">Open Frontend</button>
+                        </div>
+                    `;
+                } else {
+                    resultDiv.innerHTML = `
+                        <div class="result error">
+                            <strong>❌ Signup Failed</strong><br><br>
+                            <strong>Status:</strong> ${response.status}<br>
+                            <strong>Error:</strong> ${data.error?.message || 'Unknown error'}<br>
+                            <strong>Code:</strong> ${data.error?.code || 'N/A'}<br>
+                            ${data.error?.details ? `<br><strong>Details:</strong><br>${JSON.stringify(data.error.details, null, 2)}` : ''}
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `
+                    <div class="result error">
+                        <strong>❌ Network Error</strong><br><br>
+                        ${error.message}<br><br>
+                        <strong>Possible causes:</strong><br>
+                        - Backend server is not running<br>
+                        - CORS is blocking the request<br>
+                        - Network connectivity issues
+                    </div>
+                `;
+            }
+        }
+
+        // Quick login
+        function quickLogin(email, password) {
+            document.getElementById('login-email').value = email;
+            document.getElementById('login-password').value = password;
+            testLogin();
+        }
+
+        // Clear forms
+        function clearLoginForm() {
+            document.getElementById('login-email').value = '';
+            document.getElementById('login-password').value = '';
+            document.getElementById('login-result').innerHTML = '';
+        }
+
+        function clearSignupForm() {
+            document.getElementById('signup-firstname').value = '';
+            document.getElementById('signup-lastname').value = '';
+            document.getElementById('signup-username').value = '';
+            document.getElementById('signup-email').value = '';
+            document.getElementById('signup-password').value = '';
+            document.getElementById('signup-result').innerHTML = '';
+        }
+
+        // Check servers on load
+        window.onload = checkServers;
+    </script>
+</body>
+</html>
+
