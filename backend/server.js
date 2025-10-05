@@ -9,16 +9,30 @@ require('dotenv').config();
 
 const app = express();
 const server = createServer(app);
+// Update this in server.js
 const io = new Server(server, {
   cors: {
-    origin: process.env.FRONTEND_URL || "http://localhost:3000",
-    methods: ["GET", "POST"]
+    origin: [
+      process.env.FRONTEND_URL || "http://localhost:3000",
+      // Add your production frontend URL here once you have it
+      "https://your-frontend-url.onrender.com"
+    ],
+    methods: ["GET", "POST"],
+    credentials: true
   }
 });
 
 // Middleware
 app.use(helmet());
-app.use(cors());
+// Update this line in server.js
+app.use(cors({
+  origin: [
+    process.env.FRONTEND_URL || "http://localhost:3000",
+    // Add your production frontend URL here once you have it
+    "https://your-frontend-url.onrender.com"
+  ],
+  credentials: true
+}));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
