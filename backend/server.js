@@ -15,7 +15,7 @@ const io = new Server(server, {
     origin: [
       process.env.FRONTEND_URL || "http://localhost:3000",
       // Add your production frontend URL here once you have it
-      "https://your-frontend-url.onrender.com"
+      "https://helpdesk-mini-84td0tbxb-viveklpus-projects.vercel.app/"
     ],
     methods: ["GET", "POST"],
     credentials: true
